@@ -53,29 +53,8 @@ print('다음을 다운로드합니다...', '"'+title+'"')
 
 is_unusable_char = False
 
-for char in title:
-    if char == '[':
-        is_unusable_char = True
-    elif char == '\\':
-        is_unusable_char = True
-    elif char == '/':
-        is_unusable_char = True
-    elif char == ':':
-        is_unusable_char = True
-    elif char == '*':
-        is_unusable_char = True
-    elif char == '?':
-        is_unusable_char = True
-    elif char == '"':
-        is_unusable_char = True
-    elif char == '<':
-        is_unusable_char = True
-    elif char == '>':
-        is_unusable_char = True
-    elif char == '|':
-        is_unusable_char = True
-    elif char == ']':
-        is_unusable_char = True
+if re.search('[\/:*?"<>|]', title):
+    is_unusable_char = True
 
 if is_unusable_char == True:
     old_title = title
