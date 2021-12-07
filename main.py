@@ -51,12 +51,7 @@ while True:
         break
 print('다음을 다운로드합니다...', '"'+title+'"')
 
-is_unusable_char = False
-
 if re.search('[\/:*?"<>|]', title):
-    is_unusable_char = True
-
-if is_unusable_char == True:
     old_title = title
     title = re.sub('[\/:*?"<>|]', '', title)
     print(f'제목에 사용 불가능한 문자가 있어 폴더이름을 변경하여 저장합니다.\n{old_title} ▶▶ {title}')
