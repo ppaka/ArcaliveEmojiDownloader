@@ -12,6 +12,12 @@ def download(url: str, file_name):
         file.write(response.content)
 
 
+def cfDecodeEmail(encodedString):
+    r = int(encodedString[:2],16)
+    email = ''.join([chr(int(encodedString[i:i+2], 16) ^ r) for i in range(2, len(encodedString), 2)])
+    return email
+
+
 class TargetFormat(object):
     GIF = ".gif"
     MP4 = ".mp4"
@@ -39,9 +45,25 @@ req = requests.get(url)
 soup = BeautifulSoup(req.text, "html.parser")
 
 title_element = soup.select_one(
-    'body > div > div.content-wrapper.clearfix > article > div > div.article-wrapper > div.article-head > div.title-row > div')
-title = str(title_element).splitlines()
-title = title[1]
+    'body > div.root-container > div.content-wrapper.clearfix > article > div > div.article-wrapper > div.article-head > div.title-row > div')
+
+title = str(title_element).splitlines()[1]
+for j in title:
+    if '<a class="__cf_email__"' in title:
+        print(title)
+        start_index = title.find('<a class="__cf_email__"')
+        end_index = title.find('</a>')+4
+        print(end_index)
+        
+        email_source = title[start_index:end_index]
+
+        value_start_index = email_source.find('data-cfemail="')+14
+        value_end_index = email_source.find('" href="/cdn-cgi/l/email-protection">')
+
+        endcoded_str = email_source[value_start_index:value_end_index]
+        email = cfDecodeEmail(endcoded_str)
+
+        title = title[:start_index] + email + title[end_index:]
 
 while True:
     if title.endswith(' '):
