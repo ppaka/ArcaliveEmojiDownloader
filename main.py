@@ -1,8 +1,8 @@
 import requests
-from bs4 import BeautifulSoup
+import bs4
 import os
 import imageio
-import os
+import sys
 import re
 
 
@@ -29,15 +29,29 @@ def convertFile(inputpath, outputdir, outputfilename):
         writer.append_data(im)
     writer.close()
 
-
 def main():
     print('---- 깃허브: https://github.com/ppaka/ArcaliveEmojiDownloader ----')
+    
+    try:
+        v_req = requests.get("https://raw.githubusercontent.com/ppaka/ArcaliveEmojiDownloader/master/version.txt")
+        internet_version = int(v_req.text)
+        local_version = 1
 
-    path = os.path.dirname(os.path.abspath(__file__))
-    url = input('아카콘 페이지 주소 입력: ')
+        if local_version < internet_version:
+            print('업데이트가 있습니다! 깃허브에서 최신 버전을 내려받아주세요!')
+        else: print('최신버전입니다!')
+    except:
+        print('업데이트 확인을 실패했습니다...')
+
+    if getattr(sys, 'frozen', False):
+        dir = os.path.dirname(os.path.abspath(sys.executable))
+    else:
+        dir = os.path.dirname(os.path.abspath(__file__))
+    
+    url = input('\n아카콘 페이지 주소 입력: ')
 
     req = requests.get(url)
-    soup = BeautifulSoup(req.text, "html.parser")
+    soup = bs4.BeautifulSoup(req.text, "html.parser")
 
     title_element = soup.select_one(
         'body > div.root-container > div.content-wrapper.clearfix > article > div > div.article-wrapper > div.article-head > div.title-row > div')
@@ -101,7 +115,7 @@ def main():
 
     for i in arcacon:
         count += 1
-        sav_dir = path.replace('\\', '/')+'/'+title+'/'
+        sav_dir = dir.replace('\\', '/')+'/'+title+'/'
 
         if not os.path.exists(sav_dir):
             os.makedirs(sav_dir)
@@ -129,6 +143,7 @@ def main():
             convertFile(vid_dir+filename, sav_dir, str(count))
 
     print('---- 다운로드를 마쳤습니다 ----')
+    os.system("pause")
 
 if __name__=='__main__':
     main()
