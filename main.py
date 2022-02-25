@@ -98,18 +98,13 @@ def main():
 
     print('찾은 아카콘 개수: ' + str(total_count))
 
-    arcacon = str(element).splitlines()
+    arcacon = []
 
-    if arcacon[0] == '<div class="emoticons-wrapper">':
-        arcacon = arcacon[1:total_count+1]
-        for i in range(len(arcacon)):
-            arcacon[i] = arcacon[i].replace('<img loading="lazy" src="', '')
-            arcacon[i] = arcacon[i].replace('"/>', '')
-
-            arcacon[i] = arcacon[i].replace(
-                '<video autoplay="" loading="lazy" loop="" muted="" playsinline="" src="', '')
-            arcacon[i] = arcacon[i].replace('"></video>', '')
-            arcacon[i] = 'https:'+arcacon[i]
+    for i in element.children:
+        if type(i) == bs4.element.Tag:
+            if str(i).startswith('<div'):
+                break
+            arcacon.append('https:'+str(i['src']))
 
     count = 0
 
@@ -119,10 +114,6 @@ def main():
 
         if not os.path.exists(sav_dir):
             os.makedirs(sav_dir)
-
-        vid_dir = sav_dir+'/videos/'
-        if not os.path.exists(vid_dir):
-            os.makedirs(vid_dir)
 
         filename = str(count)
         if i.endswith('.png'):
@@ -139,6 +130,11 @@ def main():
             download(i, sav_dir+filename)
         elif i.endswith('.mp4'):
             filename += '.mp4'
+
+            vid_dir = sav_dir+'/videos/'
+            if not os.path.exists(vid_dir):
+                os.makedirs(vid_dir)
+                
             download(i, vid_dir+filename)
             convertFile(vid_dir+filename, sav_dir, str(count))
 
