@@ -30,23 +30,23 @@ def convertFile(inputpath, outputdir, outputfilename):
     writer.close()
 
 def main():
+    if getattr(sys, 'frozen', False):
+        dir = os.path.dirname(os.path.abspath(sys.executable))
+    else:
+        dir = os.path.dirname(os.path.abspath(__file__))
+    print(dir)
+
     print('---- 깃허브: https://github.com/ppaka/ArcaliveEmojiDownloader ----')
-    
     try:
         v_req = requests.get("https://raw.githubusercontent.com/ppaka/ArcaliveEmojiDownloader/master/version.txt")
         internet_version = int(v_req.text)
-        local_version = 1
+        local_version = int(open(dir+'\\version.txt').readline())
 
         if local_version < internet_version:
             print('업데이트가 있습니다! 깃허브에서 최신 버전을 내려받아주세요!')
         else: print('최신버전입니다!')
     except:
-        print('업데이트 확인을 실패했습니다...')
-
-    if getattr(sys, 'frozen', False):
-        dir = os.path.dirname(os.path.abspath(sys.executable))
-    else:
-        dir = os.path.dirname(os.path.abspath(__file__))
+        print('업데이트 확인에 실패했습니다...')
     
     url = input('\n아카콘 페이지 주소 입력: ')
 
