@@ -34,7 +34,6 @@ def main():
         dir = os.path.dirname(os.path.abspath(sys.executable))
     else:
         dir = os.path.dirname(os.path.abspath(__file__))
-    print(dir)
 
     print('---- 깃허브: https://github.com/ppaka/ArcaliveEmojiDownloader ----')
     try:
