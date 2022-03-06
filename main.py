@@ -4,7 +4,8 @@ import os
 import imageio
 import sys
 import re
-
+import ffmpeg
+import imageio_ffmpeg
 
 def download(url: str, file_name):
     with open(file_name, "wb") as file:
@@ -18,16 +19,29 @@ def cfDecodeEmail(encodedString):
     return email
 
 
-def convertFile(inputpath, outputdir, outputfilename):
+def convertFile(inputpath, outputdir, palettedir,outputfilename):
     outputpath = outputdir + outputfilename + '.gif'
+    palettepath = palettedir + outputfilename+'_palette.png'
 
     reader = imageio.get_reader(inputpath)
     fps = reader.get_meta_data()['fps']
 
-    writer = imageio.get_writer(outputpath, fps=fps)
-    for i, im in enumerate(reader):
-        writer.append_data(im)
-    writer.close()
+    # print('원본 fps: ' + str(fps))
+    while fps>50:
+        fps = fps/2
+        # print('조정 fps: ' + str(fps))
+
+    ffmpeg.input(inputpath).filter(filter_name='palettegen').output(palettepath, loglevel='error').global_args('-hide_banner').overwrite_output().run(cmd=imageio_ffmpeg.get_ffmpeg_exe())
+    ffmpeg.filter([ffmpeg.input(inputpath), ffmpeg.input(palettepath)], filter_name='paletteuse').output(outputpath, r=fps, loglevel='error').global_args('-hide_banner').overwrite_output().run(cmd=imageio_ffmpeg.get_ffmpeg_exe())
+    # outputpath = outputdir + outputfilename + '.gif'
+
+    # reader = imageio.get_reader(inputpath)
+    # fps = reader.get_meta_data()['fps']
+
+    # writer = imageio.get_writer(outputpath, fps=fps)
+    # for i, im in enumerate(reader):
+    #     writer.append_data(im)
+    # writer.close()
 
 def main():
     if getattr(sys, 'frozen', False):
@@ -133,9 +147,13 @@ def main():
             vid_dir = sav_dir+'/videos/'
             if not os.path.exists(vid_dir):
                 os.makedirs(vid_dir)
+
+            palette_dir = sav_dir+'/palette/'
+            if not os.path.exists(palette_dir):
+                os.makedirs(palette_dir)
                 
             download(i, vid_dir+filename)
-            convertFile(vid_dir+filename, sav_dir, str(count))
+            convertFile(vid_dir+filename, sav_dir, palette_dir, str(count))
 
     print('---- 다운로드를 마쳤습니다 ----')
     os.system("pause")
