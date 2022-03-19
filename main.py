@@ -86,9 +86,14 @@ def main():
 
         title = title[:start_index] + email + title[end_index:]
 
-    if title.endswith(' ') or title.startswith(' '):
-        print('제목 맨 끝에 공백이 존재합니다. 공백을 제거합니다.')
-        title.strip()
+    while True:
+        if title.endswith(' ') or title.startswith(' ') or 'ㅤ' in title:
+            print('[제목 앞 또는 뒤에 공백이 존재합니다. 공백을 제거합니다.]')
+            title = title.strip()
+            title = re.sub("^\s+|\s+$", "", title, flags=re.UNICODE)
+            title = title.replace('ㅤ', '')
+        else:
+            break
 
     print('다음을 다운로드합니다...', '"'+title+'"')
 
