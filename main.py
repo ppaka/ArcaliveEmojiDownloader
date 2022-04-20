@@ -122,7 +122,12 @@ def main():
         if type(i) == bs4.element.Tag:
             if str(i).startswith('<div'):
                 break
-            arcacon.append('https:'+str(i['src']))
+            if i.get('src'):
+                arcacon.append('https:'+str(i['src']))
+                continue
+            if i.get('data-src'):
+                arcacon.append('https:'+str(i['data-src']))
+                continue
 
     count = 0
 
