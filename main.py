@@ -148,6 +148,9 @@ def main():
         elif i.endswith('.jpg'):
             filename += '.jpg'
             download(i, sav_dir+filename)
+        elif i.endswith('.webp'):
+            filename += '.webp'
+            download(i, sav_dir+filename)
         elif i.endswith('.gif'):
             filename += '.gif'
             download(i, sav_dir+filename)
